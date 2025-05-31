@@ -55,6 +55,7 @@ async function main() {
   document.body.style.margin = '0';
   document.body.appendChild(app.canvas);
 
+
   const player = new Player(app.screen.width / 2, app.screen.height - 50);
   app.stage.addChild(player.sprite);
 
@@ -63,7 +64,7 @@ async function main() {
   const blocks: Block[] = [];
 
   function createBlocks() {
-    const positions = [150, 300, 450, 600];
+    const positions = [150, 300, 450];
     for (const x of positions) {
       for (let i = 0; i < 3; i++) {
         const block = new Block(x + i * 20, app.screen.height - 120);
@@ -76,8 +77,8 @@ async function main() {
   createBlocks();  
 
   // 敵を生成
-  for (let i = 0; i < 5; i++) {
-    for (let j = 0; j < 8; j++) {
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 6; j++) {
       const enemy = new Enemy(80 + j * 60, 60 + i * 50);
       enemies.push(enemy);
       app.stage.addChild(enemy.sprite);
@@ -87,7 +88,7 @@ async function main() {
   // --- 入力処理 ---
   const keys: Record<string, boolean> = {};
   let touchMove = 0;
-  let touchShoot = false;
+  let touchShoot = true;
   let enemyDirection = 1; // 1: 右へ, -1: 左へ
 
   window.addEventListener('keydown', (e) => keys[e.code] = true);
@@ -135,6 +136,15 @@ async function main() {
         enemies.splice(i, 1);
       }
     }
+
+    // 弾の削除
+    for (let i = bullets.length - 1; i >= 0; i--) {
+      if (bullets[i].destroyed) {
+        app.stage.removeChild(bullets[i].sprite);
+        bullets.splice(i, 1);
+      }
+    }
+    
     
     // 🎉 全滅判定（敵がいなくなったらクリア）
     if (enemies.length === 0) {
@@ -242,11 +252,11 @@ async function main() {
 
     // 弾発射（Spaceキー or タッチ）
     const shouldShoot = keys['Space'] || touchShoot;
-    if (shouldShoot && bullets.length < 5) {
+    if (shouldShoot && bullets.length < 2) {
       const bullet = new Bullet(player.sprite.x, player.sprite.y - 20);
       bullets.push(bullet);
       app.stage.addChild(bullet.sprite);
-      touchShoot = false; // 一回発射
+      //touchShoot = false; // 一回発射
     }
 
     // 弾と敵の更新・判定
