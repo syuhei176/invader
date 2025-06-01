@@ -6,6 +6,7 @@ import { EnemyBullet } from './enemy-bullet';
 import { Block } from './block';
 import { Text, TextStyle } from 'pixi.js';
 
+
 function showGameOverText(app: Application) {
   const style = new TextStyle({
     fill: '#ffffff',
@@ -40,6 +41,7 @@ function showGameClearText(app: Application) {
 
 let gameOver = false;
 let gameClear = false;
+let gameStart = true;
 
 const enemyBullets: EnemyBullet[] = [];
 let enemyShootCooldown = 0;
@@ -102,6 +104,10 @@ async function main() {
   leftBtn?.addEventListener('touchstart', e => {
     e.preventDefault();
     touchMove = -1;
+
+    if (gameStart) {
+      gameStart = false;
+    }
   });
   leftBtn?.addEventListener('touchend', e => {
     e.preventDefault();
@@ -111,6 +117,11 @@ async function main() {
   rightBtn?.addEventListener('touchstart', e => {
     e.preventDefault();
     touchMove = 1;
+
+    if (gameStart) {
+      gameStart = false;
+    }
+
   });
   rightBtn?.addEventListener('touchend', e => {
     e.preventDefault();
@@ -125,10 +136,10 @@ async function main() {
     e.preventDefault();
     touchShoot = false;
   });
-
+  
   // --- ゲームループ ---
   app.ticker.add(() => {
-    if (gameOver || gameClear) return;
+    if (gameOver || gameClear || gameStart) return;
 
     for (let i = enemies.length - 1; i >= 0; i--) {
       if (enemies[i].destroyed) {
