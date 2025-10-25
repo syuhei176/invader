@@ -42,6 +42,7 @@ function showGameClearText(app: Application) {
 let gameOver = false;
 let gameClear = false;
 let gameStart = true;
+let score = 0;
 
 const enemyBullets: EnemyBullet[] = [];
 let enemyShootCooldown = 0;
@@ -49,17 +50,37 @@ let enemyShootCooldown = 0;
 async function main() {
   const app = new Application();
 
+  // ゲーム画面を固定サイズに設定（パディング効果）
+  const gameWidth = 600;
+  const gameHeight = 700;
+
   await app.init({
-    resizeTo: window,
+    width: gameWidth,
+    height: gameHeight,
     backgroundColor: 0x000000,
   });
 
   document.body.style.margin = '0';
+  document.body.style.display = 'flex';
+  document.body.style.justifyContent = 'center';
+  document.body.style.alignItems = 'center';
+  document.body.style.minHeight = '100vh';
   document.body.appendChild(app.canvas);
 
 
   const player = new Player(app.screen.width / 2, app.screen.height - 50);
   app.stage.addChild(player.sprite);
+
+  // スコア表示
+  const scoreStyle = new TextStyle({
+    fill: '#ffffff',
+    fontSize: 24,
+    fontWeight: 'bold',
+  });
+  const scoreText = new Text('SCORE: 0', scoreStyle);
+  scoreText.x = 20;
+  scoreText.y = 20;
+  app.stage.addChild(scoreText);
 
   const bullets: Bullet[] = [];
   const enemies: Enemy[] = [];
@@ -277,6 +298,9 @@ async function main() {
         if (bullet.hit(enemy)) {
           bullet.destroy();
           enemy.destroy();
+          // スコア加算
+          score += 100;
+          scoreText.text = `SCORE: ${score}`;
         }
       }
     }
